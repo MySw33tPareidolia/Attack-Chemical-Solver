@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attack Of The Radioactive Thing Solver</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        padding: 25px 15px;
+        background: #0d0d0d;
+        color: #ddd;
+        font-family: Arial, sans-serif;
+    }
+
+    .wrap {
+        width: 100%;
+        max-width: 700px;
+        margin: auto;
+    }
+
+    h1 {
+        margin: 0 0 25px;
+        text-align: center;
+        color: #d32f2f;
+        font-size: 26px;
+        font-weight: 600;
+    }
+
+    .box {
+        background: #181818;
+        border: 1px solid #333;
+        padding: 18px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+    }
+
+    h2 {
+        margin: 0 0 15px;
+        font-size: 19px;
+        color: #eee;
+        font-weight: 500;
+    }
+
+    label {
+        display: block;
+        margin: 12px 0 6px;
+        color: #bbb;
+        font-size: 14px;
+    }
+
+    input,
+    select {
+        width: 100%;
+        padding: 10px;
+        background: #101010;
+        border: 1px solid #444;
+        color: #eee;
+        border-radius: 3px;
+        outline: none;
+    }
+
+    input:focus,
+    select:focus {
+        border-color: #777;
+    }
+
+    button {
+        width: 100%;
+        margin-top: 14px;
+        padding: 10px;
+        background: #9e2525;
+        color: white;
+        border: 0;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    button:hover {
+        background: #b52c2c;
+    }
+
+    .output {
+        margin-top: 14px;
+        padding: 13px;
+        min-height: 45px;
+        background: #090909;
+        border: 1px solid #303030;
+        border-radius: 3px;
+        white-space: pre-line;
+        font-family: Consolas, monospace;
+        color: #ccc;
+    }
+
+    .error {
+        color: #e05252;
+    }
+
+    .good {
+        color: #67b867;
+    }
+
+    .chemicals {
+        color: #aaa;
+        line-height: 1.7;
+        font-size: 14px;
+    }
+
+    .watermark {
+    position: fixed;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255, 255, 255, 0.55);
+    font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.25);
+    pointer-events: none;
+    user-select: none;
+    z-index: 9999;
+}
+
+    .hint {
+        color: #777;
+        font-size: 13px;
+        margin: 5px 0;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="wrap">
+
+    <h1>Attack Of The Radioactive Thing Solver</h1>
+
+    <div class="box">
+        <h2>M Calculator</h2>
+
+        <label for="mValue">What is M?</label>
+        <input type="number" id="mValue" placeholder="M">
+
+        <button onclick="calculateM()">Calculate</button>
+
+        <div class="output" id="mOutput">Enter M above.</div>
+    </div>
+
+    <div class="box">
+        <h2>Diamond Setup</h2>
+
+        <label for="oValue">What is O?</label>
+        <input type="number" id="oValue" placeholder="O">
+
+        <label for="color">What is your color?</label>
+        <input type="text" id="color" placeholder="Color">
+
+        <label for="diamond">Acetaldehyde Diamond</label>
+        <p class="hint">Format: Left, Top</p>
+        <input type="text" id="diamond" placeholder="Example: 1, 8">
+
+        <button onclick="setDiamond()">Set Diamond</button>
+
+        <div class="output" id="diamondOutput">No diamond selected.</div>
+    </div>
+
+    <div class="box">
+        <h2>Chemical Solver</h2>
+
+        <div class="chemicals">
+            1. 1, 3, 5 Tera Nitra Phenol<br>
+            2. Octahydro 2, 5 Nitro 347 Para-Zokine<br>
+            3. 3-Methyl-2, 4 Di-Nitrobenzene<br>
+            4. 3, 4 - Di-Nitroxy-Methyl Propane
+        </div>
+
+        <label for="chemical">Chemical</label>
+
+        <select id="chemical">
+            <option value="1">1 - 1, 3, 5 Tera Nitra Phenol</option>
+            <option value="2">2 - Octahydro 2, 5 Nitro 347 Para-Zokine</option>
+            <option value="3">3 - 3-Methyl-2, 4 Di-Nitrobenzene</option>
+            <option value="4">4 - 3, 4 - Di-Nitroxy-Methyl Propane</option>
+        </select>
+
+        <button onclick="solveChemical()">Solve</button>
+
+        <div class="output" id="chemicalOutput">
+            Select your chemical and solve.
+        </div>
+    </div>
+
+</div>
+
+<div class="watermark">MySw33tPareidolia</div>
+
+<script>
+const diamondData = {
+    "1,8": 1,
+    "7,1": 2,
+    "9,3": 3,
+    "6,6": 4,
+    "4,8": 5,
+    "5,4": 6
+};
+
+const chemicals = {
+    1: {
+        Motor_Oil: 8,
+        Wheel_Cleaner: 10,
+        Insect_Repellent: 3,
+        Drain_Opener: 13,
+        Phenol: 7,
+        Phenosulfuric_Acid: 9,
+        Racing_Fuel: 16,
+        Detergent: 9,
+        Quarters: 8,
+        Formaldehyde: 11,
+        Glass_Cleaner: 7,
+        Hexamine: 8,
+        Vinegar: 11,
+        Plant_Food: 16,
+        Paint: 8,
+        Methylybenzene: 12,
+        Baking_Soda: 8,
+        Dinitro: 12,
+        Vodka: 11,
+        Pennies: 14,
+        Acetaldehyde: 9,
+        Aldehyde_Sludge: 12,
+        Nail_Polish_Remover: 7
+    },
+
+    2: {
+        Motor_Oil: 9,
+        Wheel_Cleaner: 13,
+        Insect_Repellent: 6,
+        Drain_Opener: 16,
+        Phenol: 10,
+        Phenosulfuric_Acid: 13,
+        Racing_Fuel: 14,
+        Detergent: 6,
+        Quarters: 12,
+        Formaldehyde: 14,
+        Glass_Cleaner: 16,
+        Hexamine: 8,
+        Vinegar: 6,
+        Plant_Food: 7,
+        Paint: 5,
+        Methylybenzene: 8,
+        Baking_Soda: 11,
+        Dinitro: 7,
+        Vodka: 16,
+        Pennies: 7,
+        Acetaldehyde: 8,
+        Aldehyde_Sludge: 7,
+        Nail_Polish_Remover: 9
+    },
+
+    3: {
+        Motor_Oil: 9,
+        Wheel_Cleaner: 13,
+        Insect_Repellent: 7,
+        Drain_Opener: 7,
+        Phenol: 11,
+        Phenosulfuric_Acid: 10,
+        Racing_Fuel: 11,
+        Detergent: 16,
+        Quarters: 9,
+        Formaldehyde: 13,
+        Glass_Cleaner: 8,
+        Hexamine: 11,
+        Vinegar: 11,
+        Plant_Food: 13,
+        Paint: 15,
+        Methylybenzene: 12,
+        Baking_Soda: 6,
+        Dinitro: 9,
+        Vodka: 16,
+        Pennies: 14,
+        Acetaldehyde: 12,
+        Aldehyde_Sludge: 8,
+        Nail_Polish_Remover: 17
+    },
+
+    4: {
+        Motor_Oil: 9,
+        Wheel_Cleaner: 10,
+        Insect_Repellent: 12,
+        Drain_Opener: 11,
+        Phenol: 13,
+        Phenosulfuric_Acid: 8,
+        Racing_Fuel: 8,
+        Detergent: 13,
+        Quarters: 13,
+        Formaldehyde: 12,
+        Glass_Cleaner: 18,
+        Hexamine: 5,
+        Vinegar: 6,
+        Plant_Food: 17,
+        Paint: 10,
+        Methylybenzene: 10,
+        Baking_Soda: 10,
+        Dinitro: 9,
+        Vodka: 6,
+        Pennies: 11,
+        Acetaldehyde: 12,
+        Aldehyde_Sludge: 11,
+        Nail_Polish_Remover: 11
+    },
+
+    5: {
+        Motor_Oil: 15,
+        Wheel_Cleaner: 6,
+        Insect_Repellent: 15,
+        Drain_Opener: 8,
+        Phenol: 8,
+        Phenosulfuric_Acid: 17,
+        Racing_Fuel: 14,
+        Detergent: 8,
+        Quarters: 5,
+        Formaldehyde: 13,
+        Glass_Cleaner: 10,
+        Hexamine: 14,
+        Vinegar: 5,
+        Plant_Food: 11,
+        Paint: 7,
+        Methylybenzene: 7,
+        Baking_Soda: 13,
+        Dinitro: 15,
+        Vodka: 11,
+        Pennies: 11,
+        Acetaldehyde: 12,
+        Aldehyde_Sludge: 11,
+        Nail_Polish_Remover: 5
+    },
+
+    6: {
+        Motor_Oil: 14,
+        Wheel_Cleaner: 13,
+        Insect_Repellent: 16,
+        Drain_Opener: 15,
+        Phenol: 7,
+        Phenosulfuric_Acid: 4,
+        Racing_Fuel: 6,
+        Detergent: 13,
+        Quarters: 12,
+        Formaldehyde: 13,
+        Glass_Cleaner: 10,
+        Hexamine: 6,
+        Vinegar: 10,
+        Plant_Food: 13,
+        Paint: 8,
+        Methylybenzene: 11,
+        Baking_Soda: 14,
+        Dinitro: 13,
+        Vodka: 11,
+        Pennies: 5,
+        Acetaldehyde: 9,
+        Aldehyde_Sludge: 15,
+        Nail_Polish_Remover: 9
+    }
+};
+
+let selectedDiamond = 0;
+
+function calculateM() {
+    const number = Number(document.getElementById("mValue").value);
+    const output = document.getElementById("mOutput");
+
+    if (!Number.isFinite(number)) {
+        output.innerHTML = '<span class="error">Enter a valid M.</span>';
+        return;
+    }
+
+    const values = [2, 4, 6, 8, 9, 11, 15];
+
+    output.textContent = values
+        .map(value => value + ". " + value * number)
+        .join("\n");
+}
+
+function setDiamond() {
+    const input = document
+        .getElementById("diamond")
+        .value
+        .replace(/\s/g, "");
+
+    const output = document.getElementById("diamondOutput");
+
+    if (diamondData[input]) {
+        selectedDiamond = diamondData[input];
+        output.innerHTML =
+            '<span class="good">Diamond ' +
+            selectedDiamond +
+            ' selected.</span>';
+    } else {
+        selectedDiamond = 0;
+        output.innerHTML =
+            '<span class="error">Invalid diamond combination.</span>';
+    }
+}
+
+function solveChemical() {
+    const chemical = Number(document.getElementById("chemical").value);
+    const numO = Number(document.getElementById("oValue").value);
+    const output = document.getElementById("chemicalOutput");
+
+    if (!selectedDiamond) {
+        output.innerHTML =
+            '<span class="error">Select your diamond first.</span>';
+        return;
+    }
+
+    if (!Number.isFinite(numO)) {
+        output.innerHTML =
+            '<span class="error">Enter a valid O value.</span>';
+        return;
+    }
+
+    const d = chemicals[selectedDiamond];
+    let results = [];
+
+    if (chemical === 1) {
+        results = [
+            d.Motor_Oil + d.Wheel_Cleaner + d.Insect_Repellent - numO,
+            d.Drain_Opener + d.Phenol - numO,
+            d.Phenosulfuric_Acid + d.Detergent - numO
+        ];
+    }
+
+    if (chemical === 2) {
+        results = [
+            d.Racing_Fuel + d.Quarters - numO,
+            d.Formaldehyde + d.Glass_Cleaner - numO,
+            d.Hexamine + d.Detergent + d.Vinegar + d.Plant_Food - numO
+        ];
+    }
+
+    if (chemical === 3) {
+        results = [
+            d.Paint + d.Drain_Opener + d.Detergent - numO,
+            d.Methylybenzene + d.Baking_Soda + d.Detergent + d.Vinegar - numO,
+            d.Dinitro + d.Racing_Fuel - numO
+        ];
+    }
+
+    if (chemical === 4) {
+        results = [
+            d.Vodka + d.Pennies - numO,
+            d.Racing_Fuel + d.Quarters - numO,
+            d.Formaldehyde + d.Acetaldehyde + d.Detergent - numO,
+            d.Aldehyde_Sludge + d.Nail_Polish_Remover - numO
+        ];
+    }
+
+    output.textContent = results
+        .map((value, index) => {
+            return (index === 3 ? "Fourth" : ["First", "Second", "Third"][index]) +
+                   " Batch = " + value;
+        })
+        .join("\n");
+}
+</script>
+
+</body>
+</html>
